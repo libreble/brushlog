@@ -3,11 +3,84 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#eef1f5" />
-    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#020617" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: light)"
+      content="#eef1f5"
+    />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: dark)"
+      content="#020617"
+    />
     <meta name="color-scheme" content="light dark" />
-    <title>Brushlog — Local Dental Health</title>
+    <title>
+      Brushlog — Oral-B toothbrush history & live coaching, no account
+    </title>
+    <meta
+      name="description"
+      content="Sync the history your Oral-B iO already stores, see live pressure, brush-head wear, streaks and trends. In Chrome over Web Bluetooth — no Oral-B account, no cloud."
+    />
+    <link rel="canonical" href="https://libreble.github.io/brushlog/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="libreble" />
+    <meta
+      property="og:title"
+      content="Brushlog — Oral-B toothbrush history & live coaching, no account"
+    />
+    <meta
+      property="og:description"
+      content="Sync the history your Oral-B iO already stores, see live pressure, brush-head wear, streaks and trends. In Chrome over Web Bluetooth — no Oral-B account, no cloud."
+    />
+    <meta property="og:url" content="https://libreble.github.io/brushlog/" />
+    <meta
+      property="og:image"
+      content="https://libreble.github.io/og/brushlog.png"
+    />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Brushlog — Oral-B toothbrush history & live coaching, no account"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Brushlog — Oral-B toothbrush history & live coaching, no account"
+    />
+    <meta
+      name="twitter:description"
+      content="Sync the history your Oral-B iO already stores, see live pressure, brush-head wear, streaks and trends. In Chrome over Web Bluetooth — no Oral-B account, no cloud."
+    />
+    <meta
+      name="twitter:image"
+      content="https://libreble.github.io/og/brushlog.png"
+    />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Brushlog",
+        "url": "https://libreble.github.io/brushlog/",
+        "description": "Sync the history your Oral-B iO already stores, see live pressure, brush-head wear, streaks and trends. In Chrome over Web Bluetooth — no Oral-B account, no cloud.",
+        "applicationCategory": "HealthApplication",
+        "operatingSystem": "Chrome on Android, Windows, macOS, Linux, ChromeOS",
+        "browserRequirements": "Requires a Chromium browser with Web Bluetooth (Chrome or Edge)",
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "isAccessibleForFree": true,
+        "license": "https://opensource.org/licenses/MIT",
+        "publisher": {
+          "@type": "Organization",
+          "name": "libreble",
+          "url": "https://libreble.github.io/"
+        },
+        "image": "https://libreble.github.io/og/brushlog.png"
+      }
+    </script>
     <!--
       Apply the persisted/system theme before first paint so there's no flash of the wrong
       theme (FOUC). Reads the same localStorage key useTheme uses; default is system.
@@ -15,12 +88,12 @@
     <script>
       (function () {
         try {
-          var choice = localStorage.getItem('brushlog.theme'); // 'light' | 'dark' | 'system'
+          var choice = localStorage.getItem("brushlog.theme"); // 'light' | 'dark' | 'system'
           var dark =
-            choice === 'dark' ||
-            ((choice === 'system' || !choice) &&
-              window.matchMedia('(prefers-color-scheme: dark)').matches);
-          document.documentElement.classList.toggle('dark', dark);
+            choice === "dark" ||
+            ((choice === "system" || !choice) &&
+              window.matchMedia("(prefers-color-scheme: dark)").matches);
+          document.documentElement.classList.toggle("dark", dark);
         } catch (e) {
           /* storage/matchMedia unavailable — fall back to CSS default (light) */
         }
