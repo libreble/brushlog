@@ -1,0 +1,126 @@
+@import 'tailwindcss';
+
+/*
+ * Class-based dark mode (Tailwind v4 is CSS-first). `.dark` on <html> flips the theme; an inline
+ * script in index.html sets it before first paint (no FOUC), and useTheme keeps it in sync.
+ */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Semantic design tokens. Components use these (bg-surface, text-fg, border-line, bg-ok/15, …)
+ * instead of raw slate/teal shades, so the whole app themes from one place. Light values live in
+ * `@theme`; `.dark` overrides the same `--color-*` names. Because the base values are literal
+ * colors (not `var()` indirections), opacity modifiers compile to `color-mix` and work — e.g.
+ * `bg-ok/15` → a soft tint. Inline SVG can reference the same tokens via `var(--color-accent)` etc.
+ *
+ * Contrast target: WCAG AA in both themes (4.5:1 body text, 3:1 large text / UI boundaries).
+ * Neutrals map to slate shades chosen per background; status colors carry a "600/400" solid
+ * (bars, dots, rings, strokes) plus a "*-fg" text shade tuned to read on a /15 tint of that hue.
+ */
+@theme {
+  /* ---- Neutral surfaces (LIGHT) ---- */
+  --color-bg: #eef1f5;
+  --color-surface: #ffffff;
+  --color-surface-2: #eef1f5;
+  --color-surface-hover: #f1f5f9;
+  --color-line: #dbe2ec;
+  --color-line-strong: #c2ccda;
+
+  /* ---- Neutral text (primary → faint) ---- */
+  --color-fg: #0f172a; /* slate-900 */
+  --color-fg-secondary: #334155; /* slate-700 */
+  --color-fg-muted: #4b5768; /* ~slate-600 */
+  --color-fg-subtle: #5b677a; /* AA on white for small labels */
+  --color-fg-faint: #94a3b8; /* slate-400 — decorative only */
+
+  /* ---- Status / accent solids — bars, dots, rings, chart strokes ---- */
+  --color-accent: #0d9488; /* teal-600 */
+  --color-ok: #059669; /* emerald-600 */
+  --color-danger: #e11d48; /* rose-600 */
+  --color-warn: #d97706; /* amber-600 */
+  --color-info: #0284c7; /* sky-600 */
+  --color-violet: #7c3aed; /* violet-600 */
+
+  /* ---- Status / accent text — readable on a /15 tint of the same hue ---- */
+  --color-accent-fg: #0f766e; /* teal-700 */
+  --color-ok-fg: #047857; /* emerald-700 */
+  --color-danger-fg: #be123c; /* rose-700 */
+  --color-warn-fg: #b45309; /* amber-700 */
+  --color-info-fg: #0369a1; /* sky-700 */
+  --color-violet-fg: #6d28d9; /* violet-700 */
+
+  /* ---- Filled controls (saturated fills + text that stays AA in both themes) ---- */
+  --color-btn: #0f766e; /* teal-700 fill — white text ≈ 5.5:1 (AA) on light */
+  --color-btn-hover: #115e59; /* teal-800 */
+  --color-on-btn: #ffffff;
+  --color-danger-btn: #e11d48; /* rose-600 — white text stays AA */
+}
+
+/* DARK overrides — same token names, dark-tuned values. */
+.dark {
+  --color-bg: #020617; /* slate-950 */
+  --color-surface: #0e1729; /* subtle lift over bg */
+  --color-surface-2: #1c2740; /* inset tiles / tracks / chips */
+  --color-surface-hover: #182339;
+  --color-line: rgba(255, 255, 255, 0.1);
+  --color-line-strong: rgba(255, 255, 255, 0.2);
+
+  --color-fg: #f1f5f9; /* slate-100 */
+  --color-fg-secondary: #cbd5e1; /* slate-300 */
+  --color-fg-muted: #94a3b8; /* slate-400 */
+  --color-fg-subtle: #7686a0; /* AA on slate-950 for small labels */
+  --color-fg-faint: #64748b; /* slate-500 — decorative only */
+
+  --color-accent: #2dd4bf; /* teal-400 */
+  --color-ok: #34d399; /* emerald-400 */
+  --color-danger: #fb7185; /* rose-400 */
+  --color-warn: #fbbf24; /* amber-400 */
+  --color-info: #38bdf8; /* sky-400 */
+  --color-violet: #a78bfa; /* violet-400 */
+
+  --color-accent-fg: #5eead4; /* teal-300 */
+  --color-ok-fg: #6ee7b7; /* emerald-300 */
+  --color-danger-fg: #fda4af; /* rose-300 */
+  --color-warn-fg: #fcd34d; /* amber-300 */
+  --color-info-fg: #7dd3fc; /* sky-300 */
+  --color-violet-fg: #c4b5fd; /* violet-300 */
+
+  --color-btn: #14b8a6; /* teal-500 fill */
+  --color-btn-hover: #2dd4bf; /* teal-400 */
+  --color-on-btn: #04201c; /* deep teal-black text */
+  --color-danger-btn: #e11d48; /* rose-600 */
+}
+
+/* Form controls, scrollbars, etc. follow the active theme. */
+:root {
+  color-scheme: light;
+}
+.dark {
+  color-scheme: dark;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-fg);
+  font-family:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle pop when the live smiley face changes bucket. Only applied via the motion-safe: variant,
+ * so it's suppressed under prefers-reduced-motion. */
+@keyframes smiley-pop {
+  from {
+    transform: scale(0.82);
+  }
+  to {
+    transform: scale(1);
+  }
+}

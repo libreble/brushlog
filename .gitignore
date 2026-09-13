@@ -1,0 +1,15 @@
+node_modules
+dist
+dist-ssr
+dev-dist
+*.local
+.DS_Store
+.vite
+*.tsbuildinfo
+
+# Never commit captures or third-party binaries.
+*.apk
+*.apkm
+*.dex
+*.so
+btsnoop*.log

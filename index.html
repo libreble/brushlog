@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en" class="h-full">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#eef1f5" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#020617" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Brushlog — Local Dental Health</title>
+    <!--
+      Apply the persisted/system theme before first paint so there's no flash of the wrong
+      theme (FOUC). Reads the same localStorage key useTheme uses; default is system.
+    -->
+    <script>
+      (function () {
+        try {
+          var choice = localStorage.getItem('brushlog.theme'); // 'light' | 'dark' | 'system'
+          var dark =
+            choice === 'dark' ||
+            ((choice === 'system' || !choice) &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches);
+          document.documentElement.classList.toggle('dark', dark);
+        } catch (e) {
+          /* storage/matchMedia unavailable — fall back to CSS default (light) */
+        }
+      })();
+    </script>
+  </head>
+  <body class="h-full">
+    <div id="root" class="h-full"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
