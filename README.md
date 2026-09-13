@@ -1,5 +1,10 @@
 # Brushlog
 
+**Open the app: <https://libreble.github.io/brushlog/>** — installable, works offline. Needs Chrome on
+Android or Chrome/Edge on desktop (Web Bluetooth). No account, no cloud.
+
+Part of [libreble](https://libreble.github.io) — your devices, without their vendors.
+
 A **self-owned, offline-first PWA** that tracks your brushing sessions and dental health by
 talking to your Oral-B toothbrush directly over Bluetooth — **no Oral-B account, no cloud**.
 Everything is stored locally in your browser (IndexedDB) and never leaves your device.
