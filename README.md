@@ -62,6 +62,13 @@ connects and exposes whatever it supports — the in-app Diagnostics panel shows
 No network calls, no analytics, no accounts. Your data lives in this browser only; export it to
 JSON or delete all of it anytime from the **Your data** panel.
 
+## Support
+
+The app is free and stays that way. If you'd like to support the work anyway: a coffee on
+[Ko-fi](https://ko-fi.com/mannes), or — honestly more useful — hardware. A device on the desk is
+how it gets an app; if you have one you'd like liberated, say so in a
+[device request](https://github.com/libreble/libreble.github.io/issues/new?template=device-request.yml).
+
 ---
 
 *Unofficial and not affiliated with Oral-B / Procter & Gamble. Built from public
