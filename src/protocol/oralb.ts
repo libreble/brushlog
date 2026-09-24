@@ -93,6 +93,14 @@ const LIVE_SUBSCRIPTIONS: LiveSubscription[] = [
   { service: SERVICE.GENERAL, uuid: CHAR.SMILEY, apply: (v, s) => { s.smiley = decodeSmiley(v); } },
 ];
 
+/** The picked/remembered device doesn't speak the Oral-B protocol (e.g. some other BLE gadget). */
+export class NotABrushError extends Error {
+  constructor(deviceName?: string) {
+    super(`${deviceName ? `"${deviceName}"` : 'That device'} doesn't look like an Oral-B brush.`);
+    this.name = 'NotABrushError';
+  }
+}
+
 export class OralBBrush {
   readonly device: BluetoothDevice;
   private server: BluetoothRemoteGATTServer | null = null;
@@ -171,6 +179,36 @@ export class OralBBrush {
 
   disconnect(): void {
     this.device.gatt?.disconnect();
+  }
+
+  /**
+   * Disconnect and revoke this origin's permission for the device, so getDevices() no longer
+   * returns it and silent reconnect can't pick it up. Falls back to a plain disconnect where
+   * forget() is unavailable (Chrome < 101).
+   */
+  async forget(): Promise<void> {
+    this.device.removeEventListener('gattserverdisconnected', this.onDisconnectBound);
+    this.device.gatt?.disconnect();
+    if (typeof this.device.forget === 'function') {
+      try {
+        await this.device.forget();
+      } catch { /* already revoked */ }
+    }
+  }
+
+  /**
+   * Confirm the connected device really is an Oral-B brush: it must expose the Oral-B GENERAL
+   * service and answer a DEVICE_TYPE read with a well-formed 1- or 3-byte value. Read-only, and
+   * present on every generation. Throws NotABrushError otherwise.
+   */
+  async verify(): Promise<DeviceInfo> {
+    const typeChar = await this.getCharacteristic(SERVICE.GENERAL, CHAR.DEVICE_TYPE);
+    if (!typeChar) throw new NotABrushError(this.device.name);
+    try {
+      return decodeDeviceType(await typeChar.readValue());
+    } catch {
+      throw new NotABrushError(this.device.name);
+    }
   }
 
   /** Detach device-level listeners for a brush we're abandoning (e.g. a failed reconnect). */

@@ -78,6 +78,7 @@ export function ConnectBar(props: Props) {
               </button>
               <button
                 onClick={props.onDisconnect}
+                title="Disconnect and forget this brush — connecting again shows the chooser"
                 className="rounded-lg border border-line-strong px-3 py-1.5 text-sm text-fg hover:bg-surface-hover"
               >
                 Disconnect
