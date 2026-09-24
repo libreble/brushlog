@@ -2,6 +2,16 @@ const REPO = 'https://github.com/libreble/brushlog';
 /** A clean tag build ("v1.2.0") links to its release; anything else is shown as plain text. */
 const RELEASE = /^v\d+\.\d+\.\d+$/.test(__APP_VERSION__) ? `${REPO}/releases/tag/${__APP_VERSION__}` : null;
 
+/** The Ko-fi link wears a different joke each page load; its title/aria-label says what it is. */
+const KOFI_JOKES = [
+  'Buy me a brush head',
+  'Buy me some toothpicks',
+  'Buy me floss',
+  'Buy me a tube of toothpaste',
+];
+const KOFI_JOKE = KOFI_JOKES[Math.floor(Math.random() * KOFI_JOKES.length)];
+const KOFI_TITLE = 'Support libreble on Ko-fi';
+
 const LINK = 'inline-flex items-center gap-1 hover:text-fg';
 
 export function AppFooter() {
@@ -18,6 +28,17 @@ export function AppFooter() {
         </a>
         <a href={`${REPO}/issues/new/choose`} target="_blank" rel="noopener noreferrer" className={LINK}>
           Report an issue
+        </a>
+        <a
+          href="https://ko-fi.com/mannes"
+          target="_blank"
+          rel="noopener noreferrer"
+          title={KOFI_TITLE}
+          aria-label={`${KOFI_JOKE} — ${KOFI_TITLE}`}
+          className={LINK}
+        >
+          <CupMark />
+          {KOFI_JOKE}
         </a>
         {RELEASE ? (
           <a href={RELEASE} target="_blank" rel="noopener noreferrer" className={`${LINK} font-mono`}>
@@ -40,6 +61,25 @@ function LibrebleMark() {
         <path d="M54.69 42.50A25 25 0 1 1 54.69 21.50" />
       </g>
       <circle cx="32" cy="32" r="6.5" className="fill-[#f26b1d] dark:fill-[#ff8a3d]" />
+    </svg>
+  );
+}
+
+function CupMark() {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-3.5 w-3.5"
+      aria-hidden
+    >
+      <path d="M2.5 6h9v4a3.5 3.5 0 0 1-3.5 3.5H6A3.5 3.5 0 0 1 2.5 10V6Z" />
+      <path d="M11.5 7h1a1.75 1.75 0 0 1 0 3.5h-1.2" />
+      <path d="M5.5 2.5v1.5M8.5 2.5v1.5" />
     </svg>
   );
 }
