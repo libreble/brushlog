@@ -13,11 +13,13 @@ interface Props {
   raised: boolean;
 }
 
-const doneKey = (d: DeviceInfo) => `brushlog.reportDone.${d.modelId}-${d.protocolVersion ?? 'x'}`;
+/** Asked once per install, whatever the model — a working brush shouldn't nag. */
+const DONE_KEY = 'brushlog.reportDone';
 
-function isDone(d: DeviceInfo): boolean {
+function isDone(): boolean {
   try {
-    return localStorage.getItem(doneKey(d)) !== null;
+    // Older builds stored one key per model (brushlog.reportDone.<model>-<protocol>) — honour those.
+    return Object.keys(localStorage).some((k) => k === DONE_KEY || k.startsWith(`${DONE_KEY}.`));
   } catch {
     return false;
   }
@@ -25,28 +27,29 @@ function isDone(d: DeviceInfo): boolean {
 
 /**
  * A dismissible, non-blocking toast inviting a device report (see lib/report.ts):
- *  - a brush that isn't an iO connected → "how is it working?", once per model (dismiss or report);
- *  - the chooser was dismissed or connecting failed → "trouble finding or connecting?",
- *    hidden on dismiss until the next cancel/failure.
+ *  - a brush that isn't an iO connected → "how is it working?", once per install (dismiss or report);
+ *  - the chooser was dismissed or any error (connect, wrong device, sync) → "trouble with your
+ *    brush?", hidden on dismiss until the next cancel/error.
  * Both open a pre-filled GitHub issue form; the user reviews and submits it there.
  */
 export function ReportToast({ state, cancelled, error, device, discovery, raised }: Props) {
   const [doneNow, setDoneNow] = useState(false);
   const [problemDismissed, setProblemDismissed] = useState(false);
-  const problem = cancelled || state === 'error';
+  const problem = cancelled || state === 'error' || error !== null;
 
+  // Re-arm once the problem clears, or when a different error replaces the dismissed one.
   useEffect(() => {
-    if (!problem) setProblemDismissed(false);
-  }, [problem]);
+    setProblemDismissed(false);
+  }, [problem, error]);
 
   // Wait for discovery so the report carries the GATT layout.
   const ask =
-    state === 'connected' && device && discovery && !isConfirmedModel(device) && !doneNow && !isDone(device);
+    state === 'connected' && device && discovery && !isConfirmedModel(device) && !doneNow && !isDone();
 
   if (ask) {
     const finish = () => {
       try {
-        localStorage.setItem(doneKey(device), '1');
+        localStorage.setItem(DONE_KEY, '1');
       } catch { /* storage unavailable — it may ask again next time */ }
       setDoneNow(true);
     };
@@ -60,10 +63,10 @@ export function ReportToast({ state, cancelled, error, device, discovery, raised
     );
   }
 
-  if (problem && !problemDismissed && state !== 'connected') {
+  if (problem && !problemDismissed) {
     return (
       <Toast raised={raised} onDismiss={() => setProblemDismissed(true)}>
-        <p>Trouble finding or connecting your brush?</p>
+        <p>Trouble with your brush?</p>
         <a
           href={connectionProblemUrl(error)}
           target="_blank"

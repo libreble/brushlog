@@ -10,6 +10,7 @@ import { ConnectBar } from './components/ConnectBar.tsx';
 import { LiveSession } from './components/LiveSession.tsx';
 import { DiagnosticsPanel } from './components/DiagnosticsPanel.tsx';
 import { ReportToast } from './components/ReportToast.tsx';
+import { AppFooter } from './components/AppFooter.tsx';
 import { StatGrid } from './components/StatGrid.tsx';
 import { TrendChart } from './components/TrendChart.tsx';
 import { Insights } from './components/Insights.tsx';
@@ -92,9 +93,7 @@ export default function App() {
           </>
         )}
 
-        <footer className="pt-2 text-center text-[11px] text-fg-subtle">
-          Brushlog · self-owned · offline-first · your data never leaves this device
-        </footer>
+        <AppFooter />
       </main>
 
       {savedToast && (
