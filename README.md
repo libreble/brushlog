@@ -45,6 +45,51 @@ npm run preview     # serve the built app
 npm run typecheck   # tsc, no emit
 ```
 
+## Self-host
+
+The hosted app above is the easiest way. If you'd rather run your own copy, it's a static site —
+nothing to configure, no backend, no database.
+
+**Docker** — a prebuilt image (linux/amd64 + arm64) is published to the GitHub Container Registry:
+
+```bash
+docker run -d --name brushlog -p 8080:8080 --restart unless-stopped ghcr.io/libreble/brushlog
+# → http://localhost:8080/
+```
+
+```yaml
+# compose.yaml
+services:
+  brushlog:
+    image: ghcr.io/libreble/brushlog:latest
+    ports: ["8080:8080"]
+    restart: unless-stopped
+```
+
+The image serves the app at `/`. To serve it under a subpath behind your own proxy, build it
+yourself: `docker build --build-arg BASE_PATH=/brushlog/ -t brushlog .`
+
+**Build and host it yourself** — any static web server works:
+
+```bash
+npm ci
+BASE_PATH=/ npm run build      # → dist/
+# upload dist/ to nginx, Caddy, Netlify, Cloudflare Pages, a bucket, …
+```
+
+Set `BASE_PATH` to the path you serve from (it defaults to `/brushlog/`, the GitHub Pages path).
+Two things your server should do: send unknown paths to `index.html` (client-side routes), and
+serve `index.html` and `sw.js` with `Cache-Control: no-cache` so updates reach installed copies.
+[`docker/nginx.conf.template`](docker/nginx.conf.template) is a working nginx example.
+
+> **HTTPS is required.** Web Bluetooth only works in a secure context. `http://localhost` counts,
+> so the app works on the machine running it — but `http://192.168.x.x:8080` from your phone
+> will load and then refuse to connect. For phones, put it behind TLS: a reverse proxy with a
+> real certificate (Caddy does this automatically for a domain), or `tailscale serve`.
+
+Self-hosted copies keep their `<link rel="canonical">` pointing at libreble.github.io, so
+search engines don't treat them as duplicates.
+
 ## Browser support
 
 Web Bluetooth works in **Chrome/Edge on desktop and Android**. **iOS Safari is not supported**
