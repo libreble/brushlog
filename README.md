@@ -102,6 +102,13 @@ brush-head wear. Older **Genius / SmartSeries / Smart** lines are covered from p
 but not tested here. The client feature-detects every characteristic, so an unknown model
 connects and exposes whatever it supports — the in-app Diagnostics panel shows what that is.
 
+Have a brush other than an iO? When it connects, Brushlog asks how it went and opens a
+pre-filled [device report](https://github.com/libreble/brushlog/issues/new?template=device-report.yml)
+— model identifiers and Bluetooth layout, no brushing data. If your brush isn't in the list or
+won't connect, dismissing the chooser offers a
+[connection-problem report](https://github.com/libreble/brushlog/issues/new?template=connection-problem.yml).
+Nothing is sent from the app; you review and submit the issue on GitHub.
+
 ## Privacy
 
 No network calls, no analytics, no accounts. Your data lives in this browser only; export it to
