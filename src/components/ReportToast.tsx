@@ -25,8 +25,8 @@ function isDone(d: DeviceInfo): boolean {
 
 /**
  * A dismissible, non-blocking toast inviting a device report (see lib/report.ts):
- *  - a brush that isn't an iO connected → "does it work?", once per model (dismiss or report);
- *  - the chooser was dismissed or connecting failed → "not in the list, or won't connect?",
+ *  - a brush that isn't an iO connected → "how is it working?", once per model (dismiss or report);
+ *  - the chooser was dismissed or connecting failed → "trouble finding or connecting?",
  *    hidden on dismiss until the next cancel/failure.
  * Both open a pre-filled GitHub issue form; the user reviews and submits it there.
  */
@@ -52,9 +52,9 @@ export function ReportToast({ state, cancelled, error, device, discovery, raised
     };
     return (
       <Toast raised={raised} onDismiss={finish}>
-        <p>Brushlog is only confirmed on the Oral-B iO so far. Does your brush work?</p>
+        <p>How is your brush working for you?</p>
         <a href={deviceReportUrl(device, discovery)} target="_blank" rel="noopener noreferrer" onClick={finish} className={ACTION}>
-          Tell us how it went
+          Let us know
         </a>
       </Toast>
     );
@@ -63,7 +63,7 @@ export function ReportToast({ state, cancelled, error, device, discovery, raised
   if (problem && !problemDismissed && state !== 'connected') {
     return (
       <Toast raised={raised} onDismiss={() => setProblemDismissed(true)}>
-        <p>Brush not in the list, or won't connect?</p>
+        <p>Trouble finding or connecting your brush?</p>
         <a
           href={connectionProblemUrl(error)}
           target="_blank"
@@ -71,7 +71,7 @@ export function ReportToast({ state, cancelled, error, device, discovery, raised
           onClick={() => setProblemDismissed(true)}
           className={ACTION}
         >
-          Tell us which one
+          Let us know
         </a>
       </Toast>
     );
