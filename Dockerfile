@@ -9,7 +9,9 @@ COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
 ARG BASE_PATH=/
-RUN BASE_PATH="$BASE_PATH" npm run build
+# .git isn't in the build context, so pass the version in: --build-arg APP_VERSION=v1.2.0
+ARG APP_VERSION=dev
+RUN BASE_PATH="$BASE_PATH" APP_VERSION="$APP_VERSION" npm run build
 
 FROM nginxinc/nginx-unprivileged:1.29-alpine AS serve
 ARG BASE_PATH=/

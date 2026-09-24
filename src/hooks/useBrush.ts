@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { OralBBrush } from '../protocol/oralb.ts';
+import { OralBBrush, NotABrushError } from '../protocol/oralb.ts';
 import type { Session, DeviceInfo, BrushHead, LiveState, DiscoveredService, RawFrame } from '../protocol/types.ts';
 
 export type ConnState = 'unsupported' | 'insecure' | 'idle' | 'connecting' | 'connected' | 'error';
@@ -17,6 +17,12 @@ const LAST_DEVICE_KEY = 'brushlog.lastDeviceId';
 const RECONNECT_POLL_MS = 1000;
 /** Give up a single silent connect attempt after this so an out-of-range brush can't hang it. */
 const RECONNECT_ATTEMPT_TIMEOUT_MS = 4000;
+
+function forgetLastDevice(): void {
+  try {
+    localStorage.removeItem(LAST_DEVICE_KEY);
+  } catch { /* ignore */ }
+}
 
 function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
   return new Promise<T>((resolve, reject) => {
@@ -136,6 +142,13 @@ export function useBrush({ onSync, lastSyncedTimestamp }: UseBrushOptions) {
     try {
       const brush = await OralBBrush.request();
       await brush.connect();
+      try {
+        await brush.verify();
+      } catch (e) {
+        // Wrong device picked: drop the permission so auto-reconnect never comes back to it.
+        await brush.forget();
+        throw e;
+      }
       activate(brush);
     } catch (e) {
       // User cancelling the chooser throws — treat that as a soft return to idle.
@@ -158,18 +171,30 @@ export function useBrush({ onSync, lastSyncedTimestamp }: UseBrushOptions) {
   const tryReconnect = useCallback(async () => {
     if (reconnectingRef.current || pausedRef.current) return;
     if (stateRef.current !== 'idle') return;
-    const devices = await OralBBrush.knownDevices();
-    if (devices.length === 0) return;
     let savedId: string | null = null;
     try {
       savedId = localStorage.getItem(LAST_DEVICE_KEY);
     } catch { /* ignore */ }
-    const target = devices.find((d) => d.id === savedId) ?? devices[0];
+    if (!savedId) return;
+    // Only the brush we last verified — never "whatever else this origin was granted".
+    const target = (await OralBBrush.knownDevices()).find((d) => d.id === savedId);
+    if (!target) return;
 
     reconnectingRef.current = true;
     const brush = OralBBrush.fromDevice(target);
     try {
       await withTimeout(brush.connect(), RECONNECT_ATTEMPT_TIMEOUT_MS);
+      try {
+        await withTimeout(brush.verify(), RECONNECT_ATTEMPT_TIMEOUT_MS);
+      } catch (e) {
+        if (e instanceof NotABrushError) {
+          // Remembered from before this check existed — forget it for good.
+          forgetLastDevice();
+          await brush.forget();
+          return;
+        }
+        throw e;
+      }
       // Re-check we didn't connect/disconnect elsewhere while awaiting.
       if (stateRef.current === 'idle' && !pausedRef.current) {
         activate(brush);
@@ -183,9 +208,11 @@ export function useBrush({ onSync, lastSyncedTimestamp }: UseBrushOptions) {
     }
   }, [activate]);
 
+  /** Disconnect = forget: revoke the permission so the brush isn't silently reconnected. */
   const disconnect = useCallback(() => {
-    pausedRef.current = true; // stop the background poll until the user reconnects
-    brushRef.current?.disconnect();
+    pausedRef.current = true; // belt and braces where forget() is unsupported
+    forgetLastDevice();
+    void brushRef.current?.forget();
     brushRef.current = null;
     cleanup();
     setState('idle');
