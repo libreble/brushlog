@@ -9,6 +9,7 @@ import type { StoredSession } from './lib/session.ts';
 import { ConnectBar } from './components/ConnectBar.tsx';
 import { LiveSession } from './components/LiveSession.tsx';
 import { DiagnosticsPanel } from './components/DiagnosticsPanel.tsx';
+import { ReportToast } from './components/ReportToast.tsx';
 import { StatGrid } from './components/StatGrid.tsx';
 import { TrendChart } from './components/TrendChart.tsx';
 import { Insights } from './components/Insights.tsx';
@@ -103,6 +104,15 @@ export default function App() {
           </div>
         </div>
       )}
+
+      <ReportToast
+        state={brush.state}
+        cancelled={brush.cancelled}
+        error={brush.error}
+        device={brush.device}
+        discovery={brush.discovery}
+        raised={savedToast !== null}
+      />
 
       {selected && (
         <SessionDetail session={selected} onClose={() => setSelected(null)} goalDurationS={goalDurationS} />

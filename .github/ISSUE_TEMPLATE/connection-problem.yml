@@ -1,0 +1,42 @@
+name: Connection problem
+description: Your brush isn't in the list, or it won't connect.
+title: 'Connection problem: '
+labels: ['connection problem']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Sorry it didn't work. Tell us what you have — knowing which brushes don't connect is the
+        first step to supporting them.
+
+        Tip: most brushes only advertise while awake. Press the power button (or pick the brush up)
+        right before connecting.
+  - type: input
+    id: model
+    attributes:
+      label: Brush model
+      description: As printed on the handle or box.
+      placeholder: Oral-B iO Series 7
+    validations:
+      required: true
+  - type: dropdown
+    id: problem
+    attributes:
+      label: What happened?
+      options:
+        - My brush isn't in the list
+        - It's in the list, but won't connect
+        - It connects, then drops
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: Anything else?
+      description: Did it show up under a different name? Is it paired with the vendor app on another phone?
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: Filled in by the app. Review it before submitting.
+      render: text

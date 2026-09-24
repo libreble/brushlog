@@ -40,6 +40,8 @@ export function useBrush({ onSync, lastSyncedTimestamp }: UseBrushOptions) {
   const [live, setLive] = useState<LiveState | null>(null);
   const [device, setDevice] = useState<DeviceInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
+  /** The last manual connect ended with the chooser dismissed — offer a connection-problem report. */
+  const [cancelled, setCancelled] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [syncProgress, setSyncProgress] = useState(0);
   const [discovery, setDiscovery] = useState<DiscoveredService[] | null>(null);
@@ -128,6 +130,7 @@ export function useBrush({ onSync, lastSyncedTimestamp }: UseBrushOptions) {
     if (state === 'unsupported' || state === 'insecure') return;
     pausedRef.current = false; // a manual connect re-enables auto-reconnect
     setError(null);
+    setCancelled(false);
     setState('connecting');
     setRawLog([]);
     try {
@@ -139,6 +142,7 @@ export function useBrush({ onSync, lastSyncedTimestamp }: UseBrushOptions) {
       const msg = e instanceof Error ? e.message : String(e);
       if (e instanceof DOMException && e.name === 'NotFoundError') {
         setState('idle');
+        setCancelled(true);
       } else {
         setError(msg);
         setState('error');
@@ -198,5 +202,5 @@ export function useBrush({ onSync, lastSyncedTimestamp }: UseBrushOptions) {
 
   useEffect(() => cleanup, [cleanup]);
 
-  return { state, live, device, error, syncing, syncProgress, discovery, rawLog, connect, disconnect, sync };
+  return { state, live, device, error, cancelled, syncing, syncProgress, discovery, rawLog, connect, disconnect, sync };
 }

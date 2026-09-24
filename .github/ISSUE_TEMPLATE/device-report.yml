@@ -1,0 +1,45 @@
+name: Device report
+description: Tell us how your brush works with Brushlog — this is how models get confirmed.
+title: 'Device report: '
+labels: ['device report']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks! Brushlog is confirmed on the Oral-B iO; older Genius / SmartSeries / Smart brushes
+        are supported from prior art but untested. Your report is how they get confirmed (or fixed).
+
+        If you opened this from the app, the **Connection** box below is already filled in with
+        your brush's model identifiers and Bluetooth layout — no brushing data. If we need more to
+        fix something, we'll ask for the in-app Diagnostics report in the thread.
+  - type: input
+    id: model
+    attributes:
+      label: Brush model
+      description: As printed on the handle or box.
+      placeholder: Oral-B iO Series 7
+    validations:
+      required: true
+  - type: dropdown
+    id: works
+    attributes:
+      label: Does it work?
+      multiple: true
+      options:
+        - Live view works (timer, mode, pressure)
+        - History sync works
+        - Brush-head wear shows up
+        - Something is wrong (tell us below)
+    validations:
+      required: true
+  - type: textarea
+    id: details
+    attributes:
+      label: What did you see?
+      description: Anything missing, wrong or odd — e.g. a mode shown under the wrong name.
+  - type: textarea
+    id: connection
+    attributes:
+      label: Connection
+      description: Filled in by the app. Review it before submitting.
+      render: text
